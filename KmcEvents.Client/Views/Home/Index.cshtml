@@ -1,0 +1,248 @@
+@model List<EventVm>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- =========================================================
+     HERO SECTION
+     ========================================================= -->
+
+<section class="hero">
+
+    <div class="hero-overlay">
+    </div>
+
+    <div class="hero-content">
+
+        <span class="eyebrow1">
+            Kandy Municipal Council • Official City Events Platform
+        </span>
+
+        <h1>
+            Explore Events & Experience Kandy.
+        </h1>
+
+        <div class="hero-language-content">
+            <p lang="si">
+                මහනුවරේ විශේෂ අත්දැකීම් සොයාගන්න.
+            </p>
+
+            <p lang="en">
+                Discover unforgettable experiences in Kandy.
+            </p>
+
+            <p lang="ta">
+                கண்டியின் சிறந்த அனுபவங்களை கண்டறியுங்கள்.
+            </p>
+        </div>
+
+
+        <!-- HERO ACTION BUTTONS -->
+
+        <div class="hero-actions">
+
+            <a class="btn primary"
+               asp-controller="Events"
+               asp-action="Index">
+
+                Explore Events
+
+            </a>
+
+            @if (Context.Session.GetString("Role") == null)
+            {
+                <a class="btn outline-light"
+                   asp-controller="Account"
+                   asp-action="RegisterOrganizer">
+
+                    Become an Organizer
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+ </section>
+
+<!-- =========================================================
+     FEATURES SECTION
+     ========================================================= -->
+
+<section class="feature-section">
+
+    <div class="section-heading">
+
+        <span>
+            Why KMC Events
+        </span>
+
+        <h2>
+            Everything city events need in one platform
+        </h2>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+        <article class="feature-card">
+
+            <div class="icon">
+                01
+            </div>
+
+            <h3>
+                Smart Event Discovery
+            </h3>
+
+            <p>
+                Search published events by keyword,
+                category, location and date.
+            </p>
+
+        </article>
+
+
+        <article class="feature-card">
+
+            <div class="icon">
+                02
+            </div>
+
+            <h3>
+                Seat & Ticket Categories
+            </h3>
+
+            <p>
+                Choose ticket categories with
+                category-wise seat limits and prices.
+            </p>
+
+        </article>
+
+
+        <article class="feature-card">
+
+            <div class="icon">
+                03
+            </div>
+
+            <h3>
+                Approval & QR Ticket
+            </h3>
+
+            <p>
+                Organizer approval controls the final booking status,
+                while approved users receive secure QR tickets.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     UPCOMING EVENTS SECTION
+     ========================================================= -->
+
+<section class="events-section">
+
+    <div class="section-heading row">
+
+        <div>
+
+            <span>
+                Explore Kandy
+            </span>
+
+            <h2>
+                Upcoming Events
+            </h2>
+
+        </div>
+
+
+        <a class="text-link"
+           asp-controller="Events"
+           asp-action="Index">
+
+            View all events →
+
+        </a>
+
+    </div>
+
+
+    <div class="event-grid">
+
+        @foreach (var e in Model)
+        {
+            var eventImage =
+            string.IsNullOrWhiteSpace(e.ImageUrl)
+            ? Url.Content("~/images/kmc-hero.jpg")
+            : e.ImageUrl;
+
+            <article class="event-card">
+
+                <div class="event-image"
+                     style="background-image: url('@eventImage');">
+
+                    <span>
+                        @e.Category
+                    </span>
+
+                </div>
+
+
+                <div class="event-body">
+
+                    <div class="date-chip">
+
+                        @e.EventDate.ToString(
+                        "dd MMM yyyy • hh:mm tt"
+                                        )
+
+                </div>
+
+
+                <h3>
+                    @e.Title
+                </h3>
+
+
+                <p>
+                    @e.Location
+                </p>
+
+
+                <a class="btn small"
+                   asp-controller="Events"
+                   asp-action="Details"
+                   asp-route-id="@e.Id">
+
+                    View Event
+
+                </a>
+
+            </div>
+
+        </article>
+                }
+
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+
+                No published upcoming events yet.
+
+            </div>
+        }
+
+    </div>
+
+</section>

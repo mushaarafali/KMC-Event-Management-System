@@ -1,0 +1,74 @@
+@model ReservationVm
+@{
+    ViewData["Title"]="Seat Reservation";
+    var e=(EventVm)ViewBag.Event;
+}
+<section class="page-hero compact reservation-event-hero"
+         style="background-image:
+                linear-gradient(
+                    90deg,
+                    rgba(28, 10, 13, 0.90) 0%,
+                    rgba(28, 10, 13, 0.65) 50%,
+                    rgba(0, 83, 78, 0.35) 100%
+                ),
+                url('@(
+         string.IsNullOrWhiteSpace(e.ImageUrl)
+             ? Url.Content("~/images/kmc-hero.jpg")
+             : e.ImageUrl
+                                )');">
+
+    <div class="page-hero-content">
+
+        <span class="eyebrow">
+            Seat Reservation
+        </span>
+
+        <h1>
+            @e.Title
+        </h1>
+
+        <p>
+            @e.EventDate.ToString("dd MMM yyyy • hh:mm tt")
+            •
+            @e.Location
+        </p>
+
+    </div>
+
+</section>
+<section class="form-section">
+    <form class="form-card" method="post">
+        <div asp-validation-summary="ModelOnly" class="validation">
+        </div>
+        <input asp-for="EventId" type="hidden"/>
+        <label>Ticket Category</label>
+        <select asp-for="TicketCategoryId" required>
+            <option value="">Choose ticket category</option>@foreach(var t in e.TicketCategories)
+            {
+                <option value="@t.Id">@t.Name - LKR @t.Price.ToString("N2")</option>
+            }
+        </select>
+        <label asp-for="Quantity">Number of Seats</label>
+        <input asp-for="Quantity" type="number" min="1" max="10"/>
+        <span asp-validation-for="Quantity" class="validation">
+        </span>
+        <label>Payment Option</label>
+        <div class="radio-cards">
+            <label>
+                <input type="radio" asp-for="PaymentMethod" value="Pay Later" checked/>
+                <span>
+                    <strong>Pre-book / Pay Later</strong>
+                    <small>Submit reservation without payment; organizer approval is still required.</small>
+                </span>
+            </label>
+            <label>
+                <input type="radio" asp-for="PaymentMethod" value="Card"/>
+                <span>
+                    <strong> Card Payment</strong>
+                    <small>Pay now in the demo gateway, then wait for organizer approval.</small>
+                </span>
+            </label>
+        </div>
+        <button class="btn primary" type="submit">Continue Reservation</button>
+    </form>
+</section>

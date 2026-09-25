@@ -1,0 +1,250 @@
+﻿@model List<AdminEventRowVm>
+
+@{
+    ViewData["Title"] = "Manage All Events";
+
+    var totalEvents = Model.Count;
+    var publishedEvents = Model.Count(x => x.IsPublished);
+    var draftEvents = Model.Count(x => !x.IsPublished);
+    var disabledOrganizerEvents = Model.Count(x => !x.OrganizerActive);
+}
+
+<section class="dashboard-head">
+    <div>
+        <span class="eyebrow">Kandy Municipal Council</span>
+
+        <h1>Manage All Events</h1>
+
+        <p>
+            Monitor all events registered in the KMC Event Management Platform.
+        </p>
+    </div>
+
+    <div>
+        <a class="btn ghost"
+           asp-controller="Admin"
+           asp-action="Dashboard">
+            Back to Dashboard
+        </a>
+    </div>
+</section>
+
+<section class="stat-grid">
+
+    <div>
+        <strong>@totalEvents</strong>
+        <span>Total Events</span>
+    </div>
+
+    <div>
+        <strong>@publishedEvents</strong>
+        <span>Published</span>
+    </div>
+
+    <div>
+        <strong>@draftEvents</strong>
+        <span>Draft Events</span>
+    </div>
+
+    <div>
+        <strong>@disabledOrganizerEvents</strong>
+        <span>Hidden by Admin</span>
+    </div>
+
+</section>
+
+<section class="dashboard-section">
+
+    <div class="admin-section-title">
+        <div>
+            <span class="eyebrow">Event Monitoring</span>
+            <h2>All Events</h2>
+        </div>
+
+        <div class="admin-table-search">
+            <input type="search"
+                   id="eventSearch"
+                   placeholder="Search event, organizer or location..."
+                   autocomplete="off" />
+        </div>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="admin-empty-state">
+            <h3>No Events Found</h3>
+
+            <p>
+                There are currently no events registered in the system.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="responsive-table">
+
+            <table id="eventsTable">
+
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Organizer</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Capacity</th>
+                        <th>Event Status</th>
+                        <th>Organizer Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr class="admin-event-row">
+
+                            <td>
+                                <div class="admin-primary-cell">
+
+                                    <strong>
+                                        @item.Title
+                                    </strong>
+
+                                    <small>
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        @item.Location
+                                    </small>
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="admin-primary-cell">
+
+                                    <strong>
+                                        @item.Organizer
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(item.Company))
+                                    {
+                                        <small>
+                                            @item.Company
+                                        </small>
+                                    }
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="admin-category-badge">
+                                    @item.Category
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="admin-primary-cell">
+
+                                    <strong>
+                                        @item.EventDate.ToString("dd MMM yyyy")
+                                    </strong>
+
+                                    <small>
+                                        @item.EventDate.ToString("hh:mm tt")
+                                    </small>
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    @item.Capacity
+                                </strong>
+
+                                <small class="admin-block-small">
+                                    seats
+                                </small>
+                            </td>
+
+                            <td>
+                                @if (item.IsPublished)
+                                {
+                                    <span class="admin-status admin-status-success">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        Published
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="admin-status admin-status-draft">
+                                        <i class="fa-solid fa-file"></i>
+                                        Draft
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.OrganizerActive)
+                                {
+                                    <span class="admin-status admin-status-success">
+                                        <i class="fa-solid fa-user-check"></i>
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="admin-status admin-status-danger">
+                                        <i class="fa-solid fa-user-slash"></i>
+                                        Disabled
+                                    </span>
+
+                                    <small class="admin-hidden-note">
+                                        Hidden from public
+                                    </small>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput =
+            document.getElementById("eventSearch");
+
+        const rows =
+            document.querySelectorAll(".admin-event-row");
+
+        if (!searchInput) {
+            return;
+        }
+
+        searchInput.addEventListener("input", function () {
+
+            const searchValue =
+                this.value
+                    .toLowerCase()
+                    .trim();
+
+            rows.forEach(function (row) {
+
+                const rowText =
+                    row.innerText.toLowerCase();
+
+                row.style.display =
+                    rowText.includes(searchValue)
+                        ? ""
+                        : "none";
+            });
+        });
+    });
+</script>

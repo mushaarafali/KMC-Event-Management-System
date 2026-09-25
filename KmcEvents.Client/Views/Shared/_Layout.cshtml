@@ -1,0 +1,419 @@
+@{
+    var role = Context.Session.GetString("Role");
+    var name = Context.Session.GetString("Name");
+    var logged = !string.IsNullOrWhiteSpace(Context.Session.GetString("Token"));
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - KMC Events</title>
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="site-header">
+
+        <div class="header-inner">
+
+            <!-- KMC BRAND -->
+
+            <a class="brand"
+               asp-controller="Home"
+               asp-action="Index">
+
+                <img src="~/images/kmc_logo.png"
+                     alt="Kandy Municipal Council logo" />
+
+                <span>
+                    KMC
+                    <small>Event Management</small>
+                </span>
+
+            </a>
+
+            <!-- MOBILE MENU -->
+
+            <button class="menu-btn"
+                    id="menuBtn"
+                    type="button"
+                    aria-label="Open navigation menu">
+
+                ☰
+
+            </button>
+
+            <!-- =================================================
+                 NAVIGATION
+                 ================================================= -->
+
+            <nav class="nav" id="mainNav">
+
+                <!-- KMC ADMIN -->
+                @if (role == "KMC Admin")
+                {
+                    <a asp-controller="Admin"
+                       asp-action="Dashboard">
+                        Dashboard
+                    </a>
+
+                    <a asp-controller="Admin"
+                       asp-action="Events">
+                        Events
+                    </a>
+
+                    <a asp-controller="Admin"
+                       asp-action="Reservations">
+                        Reservations
+                    </a>
+
+                    <a asp-controller="Admin"
+                       asp-action="Reports">
+                        Reports
+                    </a>
+
+                    <a asp-controller="Admin"
+                       asp-action="Messages">
+                        Messages
+                    </a>
+
+                    <a asp-controller="Events"
+                       asp-action="Index">
+                        Website Preview
+                    </a>
+
+                }
+
+                <!-- EVENT ORGANIZER -->
+                @if (role == "Event Organizer")
+                {
+                    <a asp-controller="Organizer"
+                       asp-action="Dashboard">
+                        Dashboard
+                    </a>
+
+                    <a asp-controller="Organizer"
+                       asp-action="Create">
+                        Create Event
+                    </a>
+
+                    <a asp-controller="Events"
+                       asp-action="Index">
+                        Public Events
+                    </a>
+                }
+
+                <!-- PUBLIC USER / GUEST -->
+                @if (role != "KMC Admin" && role != "Event Organizer")
+                {
+                    <a asp-controller="Home"
+                       asp-action="Index">
+                        Home
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="About">
+                        About
+                    </a>
+
+                    <a asp-controller="Events"
+                       asp-action="Index">
+                        Events
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="Contact">
+                        Contact Us
+                    </a>
+
+                    @if (role == "Public")
+                    {
+                        <a asp-controller="Reservations"
+                           asp-action="Mine">
+                            My Reservations
+                        </a>
+                    }
+                }
+
+                <!-- ACCOUNT AREA -->
+                @if (logged)
+                {
+                    @if (role == "KMC Admin")
+                    {
+                        <span class="nav-user">
+                            KMC System Administrator
+                        </span>
+                    }
+
+                    @if (role != "KMC Admin")
+                    {
+                        <span class="nav-user">
+                            @name
+                        </span>
+                    }
+
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post"
+                          class="nav-logout-form">
+
+                        @Html.AntiForgeryToken()
+
+                        <button class="nav-login logout"
+                                type="submit">
+                            Logout
+                        </button>
+
+                    </form>
+                }
+
+                @if (!logged)
+                {
+                    <a class="nav-login"
+                       asp-controller="Account"
+                       asp-action="Login">
+                        Login
+                    </a>
+                }
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="flash success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="flash error">
+                @TempData["Error"]
+            </div>
+        }
+
+        @RenderBody()
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="main-footer">
+
+        <div class="footer-inner">
+
+            <!-- KMC INFORMATION -->
+
+            <div>
+
+                <div class="footer-brand">
+
+                    <img src="~/images/kmc_logo.png"
+                         alt="Kandy Municipal Council" />
+
+                    <strong>
+                        Kandy Municipal Council
+                    </strong>
+
+                </div>
+
+                <p>
+                    One city platform for discovering,
+                    organizing and reserving seats for
+                    public events in Kandy.
+                </p>
+
+            </div>
+
+
+            <!-- QUICK LINKS -->
+
+            <div>
+
+                <h3>
+                    Quick Links
+                </h3>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="footer-icon-link">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span>Home</span>
+
+                </a>
+
+                <a asp-controller="Events"
+                   asp-action="Index"
+                   class="footer-icon-link">
+
+                    <i class="fa-solid fa-calendar-days"></i>
+
+                    <span>Events</span>
+
+                </a>
+
+                <a asp-controller="Home"
+                   asp-action="About"
+                   class="footer-icon-link">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <span>About KMC Events</span>
+
+                </a>
+
+                <a asp-controller="Home"
+                   asp-action="Contact"
+                   class="footer-icon-link">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <span>Contact Us</span>
+
+                </a>
+
+            </div>
+
+
+            <!-- CONTACT INFORMATION -->
+
+            <div>
+
+                <h3>
+                    Contact Info
+                </h3>
+
+                <p class="footer-contact-item">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <span>
+                        +94 81 222 2275
+                    </span>
+
+                </p>
+
+                <p class="footer-contact-item">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <span>
+                        info@kandy.mc.gov.lk
+                    </span>
+
+                </p>
+
+                <p class="footer-contact-item">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <span>
+                        Kandy Municipal Council,
+                        Kandy, Sri Lanka
+                    </span>
+
+                </p>
+
+            </div>
+
+
+            <!-- PLATFORM -->
+
+            <div>
+
+                <h3>
+                    Platform
+                </h3>
+
+                <p class="footer-platform-text">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    <span>
+                        Secure role-based event services,
+                        ticket categories, reservations
+                        and organizer approval.
+                    </span>
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER BOTTOM -->
+
+        <div class="footer-bottom">
+
+            <span>
+                © @DateTime.Now.Year Kandy Municipal Council.
+                All Rights Reserved.Developed by Mushaaraf Ali
+
+                <a href="https://lk.linkedin.com/in/mushaarafalintr"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="developer-linkedin"
+                   title="Mushaaraf Ali on LinkedIn"
+                   aria-label="Mushaaraf Ali on LinkedIn">
+
+                    <i class="fa-brands fa-linkedin-in"></i>
+
+                </a>
+
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+    @await RenderSectionAsync(
+    "Scripts",
+        required: false
+        )
+
+</body>
+
+</html>

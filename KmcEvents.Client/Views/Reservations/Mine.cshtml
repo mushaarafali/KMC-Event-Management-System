@@ -1,0 +1,72 @@
+@model List<ReservationVm>
+@{
+    ViewData["Title"]="My Reservations";
+}
+<section class="page-hero compact my-reservations-hero">
+
+    <div class="page-hero-content">
+
+        <span class="eyebrow">
+            Public Dashboard
+        </span>
+
+        <h1>
+            My Reservations
+        </h1>
+
+        <p>
+            Track payment and organizer approval status.
+        </p>
+
+    </div>
+
+</section>
+<section class="table-section">
+    <div class="responsive-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Ticket</th>
+                    <th>Seats</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Approval</th>
+                    <th>QR Ticket</th>
+                </tr>
+            </thead>
+            <tbody>@foreach(var r in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@r.EventTitle</strong>
+                            <small>@r.EventDate.ToString("dd MMM yyyy") • @r.Location</small>
+                        </td>
+                        <td>@r.TicketCategory</td>
+                        <td>@r.Quantity</td>
+                        <td>LKR @r.TotalAmount.ToString("N2")</td>
+                        <td>
+                            <span class="status">@r.PaymentStatus</span>
+                        </td>
+                        <td>
+                            <span class="status @((r.ApprovalStatus??"").ToLower())">@r.ApprovalStatus</span>
+                        </td>
+                        <td>@if(!string.IsNullOrWhiteSpace(r.QrCode))
+                            {
+                                <img class="qr" src="@r.QrCode" alt="QR ticket"/>}else
+                                {
+                                    <small>Available after approval</small>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if(Model.Count==0)
+                    {
+                        <tr>
+                            <td colspan="7">No reservations yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>

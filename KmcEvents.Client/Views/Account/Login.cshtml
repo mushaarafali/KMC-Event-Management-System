@@ -1,0 +1,104 @@
+@model LoginVm
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-title">
+            <span class="eyebrow">Secure Account Access</span>
+            <h1>Welcome Back</h1>
+            <p>Login to KMC Event Management.</p>
+        </div>
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly" class="validation"></div>
+
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+            <div class="form-group">
+                <label asp-for="Email">Email Address</label>
+
+                <input asp-for="Email"
+                       type="email"
+                       placeholder="Enter your email address"
+                       autocomplete="email" />
+
+                <span asp-validation-for="Email" class="validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Password</label>
+
+                <div class="password-wrap">
+
+                    <input asp-for="Password"
+                           type="password"
+                           id="loginPassword"
+                           placeholder="Enter your password"
+                           autocomplete="current-password" />
+
+                    <button type="button"
+                            class="password-eye"
+                            onclick="toggleLoginPassword()"
+                            aria-label="Show or hide password">
+
+                        <i id="loginPasswordIcon"
+                           class="fa-solid fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+                <span asp-validation-for="Password" class="validation"></span>
+            </div>
+
+            <div class="forgot-password-row">
+                <a asp-controller="Account"
+                   asp-action="ForgotPassword">
+                    Forgot Password?
+                </a>
+            </div>
+
+            <button class="btn primary full" type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <div class="auth-links">
+
+            <a asp-controller="Account"
+               asp-action="RegisterPublic">
+                Create Public Account
+            </a>
+
+            <a asp-controller="Account"
+               asp-action="RegisterOrganizer">
+                Register as Organizer
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function toggleLoginPassword() {
+        const password = document.getElementById("loginPassword");
+        const icon = document.getElementById("loginPasswordIcon");
+
+        if (password.type === "password") {
+            password.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            password.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+</script>

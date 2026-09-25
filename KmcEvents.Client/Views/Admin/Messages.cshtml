@@ -1,0 +1,112 @@
+﻿@model List<ContactMessageVm>
+
+@{
+    ViewData["Title"] = "Contact Messages";
+}
+
+<section class="dashboard-head">
+
+    <div>
+        <span class="eyebrow">
+            Kandy Municipal Council
+        </span>
+
+        <h1>
+            Contact Messages
+        </h1>
+
+        <p>
+            View inquiries and messages submitted through the public contact form.
+        </p>
+    </div>
+
+</section>
+
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="eyebrow">
+                Public Inquiries
+            </span>
+
+            <h2>
+                Received Messages
+            </h2>
+
+            <p>
+                Total Messages: @Model.Count
+            </p>
+        </div>
+
+    </div>
+
+
+    @if (Model.Count == 0)
+    {
+        <div class="admin-empty-state">
+
+            <h3>
+                No Messages
+            </h3>
+
+            <p>
+                No contact messages have been received yet.
+            </p>
+
+        </div>
+    }
+    else
+    {
+        <div class="admin-message-grid">
+
+            @foreach (var message in Model)
+            {
+                <article class="admin-message-card">
+
+                    <div class="message-card-head">
+
+                        <div>
+                            <span class="message-name">
+                                @message.Name
+                            </span>
+
+                            <span class="message-email">
+                                @message.Email
+                            </span>
+                        </div>
+
+                        <span class="message-date">
+                            @message.CreatedAt.ToString("dd MMM yyyy hh:mm tt")
+                        </span>
+
+                    </div>
+
+
+                    <h3>
+                        @message.Subject
+                    </h3>
+
+
+                    <p>
+                        @message.Message
+                    </p>
+
+
+                    <a href="mailto:@message.Email"
+                       class="mini-btn">
+
+                        <i class="fa-solid fa-reply"></i>
+                        Reply by Email
+
+                    </a>
+
+                </article>
+            }
+
+        </div>
+    }
+
+</section>

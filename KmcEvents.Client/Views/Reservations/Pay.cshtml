@@ -1,0 +1,174 @@
+@model CardVm
+
+@{
+    ViewData["Title"] = "Card Payment";
+}
+
+<section class="payment-hero card-payment-hero">
+
+    <div class="page-hero-content">
+
+        <span class="eyebrow">
+            Secure Payment
+        </span>
+
+        <h1>
+            Card Payment
+        </h1>
+
+        <p>
+            Enter your card details to complete the reservation.
+            Your full card number and CVV are never stored.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="payment-layout">
+
+    <form class="form-card payment-card"
+          method="post"
+          autocomplete="off">
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation">
+        </div>
+
+        <!-- CHECKOUT DETAILS -->
+
+        <input asp-for="EventId"
+               type="hidden" />
+
+        <input asp-for="TicketCategoryId"
+               type="hidden" />
+
+        <input asp-for="Quantity"
+               type="hidden" />
+
+        <input asp-for="Amount"
+               type="hidden" />
+
+
+        <!-- CARD NUMBER -->
+
+        <label asp-for="CardNumber">
+            Card Number
+        </label>
+
+        <input asp-for="CardNumber"
+               inputmode="numeric"
+               maxlength="16"
+               pattern="[0-9]{16}"
+               placeholder="1234123412341234"
+               autocomplete="off" />
+
+        <span asp-validation-for="CardNumber"
+              class="validation">
+        </span>
+
+
+        <!-- CARD HOLDER -->
+
+        <label asp-for="CardHolder">
+            Card Holder Name
+        </label>
+
+        <input asp-for="CardHolder"
+               placeholder="Enter card holder name"
+               autocomplete="off" />
+
+        <span asp-validation-for="CardHolder"
+              class="validation">
+        </span>
+
+
+        <!-- EXPIRY / CVV -->
+
+        <div class="two-col">
+
+            <div>
+
+                <label asp-for="Expiry">
+                    Expiry
+                </label>
+
+                <input asp-for="Expiry"
+                       maxlength="5"
+                       placeholder="MM/YY"
+                       autocomplete="off" />
+
+                <span asp-validation-for="Expiry"
+                      class="validation">
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <label asp-for="Cvv">
+                    CVV
+                </label>
+
+                <input asp-for="Cvv"
+                       type="password"
+                       maxlength="4"
+                       inputmode="numeric"
+                       placeholder="123"
+                       autocomplete="off" />
+
+                <span asp-validation-for="Cvv"
+                      class="validation">
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT BUTTON -->
+
+        <button class="btn primary full"
+                type="submit">
+
+            Pay LKR @Model.Amount.ToString("N2")
+
+        </button>
+
+    </form>
+
+
+    <!-- SECURITY INFORMATION -->
+
+    <aside class="reserve-card">
+
+        <h3>
+            Security Note
+        </h3>
+
+        <p>
+            The system stores only the payment result,
+            masked card number, last four digits,
+            card holder name, expiry date and transaction reference.
+        </p>
+
+        <p>
+            The full card number and CVV are never stored.
+        </p>
+
+        <div class="payment-note">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            <span>
+                Your reservation will be created only after
+                successful card payment.
+            </span>
+
+        </div>
+
+    </aside>
+
+</section>

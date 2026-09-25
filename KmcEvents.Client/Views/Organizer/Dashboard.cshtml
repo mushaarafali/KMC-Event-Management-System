@@ -1,0 +1,513 @@
+@model List<EventVm>
+
+@{
+    ViewData["Title"] = "Organizer Dashboard";
+
+    var reservations =
+        ViewBag.Reservations as List<ReservationVm>
+        ?? new List<ReservationVm>();
+}
+
+<!-- =========================================================
+     ORGANIZER DASHBOARD HEADER
+     ========================================================= -->
+
+<section class="dashboard-head">
+
+    <div>
+
+        <span class="eyebrow">
+            Event Organizer
+        </span>
+
+        <h1>
+            Organizer Dashboard
+        </h1>
+
+        <p>
+            Manage only your own events and participant reservations.
+        </p>
+
+    </div>
+
+
+    <a class="btn primary"
+       asp-controller="Organizer"
+       asp-action="Create">
+
+        + Create Event
+
+    </a>
+
+</section>
+
+
+<!-- =========================================================
+     MY EVENTS
+     ========================================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <h2>
+                My Events
+            </h2>
+
+            <p>
+                Total Events: @Model.Count
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="responsive-table">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Event
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Category
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (Model.Count > 0)
+                {
+                    @foreach (var eventItem in Model)
+                    {
+                        <tr>
+
+                            <!-- EVENT -->
+
+                            <td>
+
+                                <strong>
+                                    @eventItem.Title
+                                </strong>
+
+                                <small>
+                                    @eventItem.Location
+                                </small>
+
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+
+                                @eventItem.EventDate.ToString(
+                                "dd MMM yyyy hh:mm tt"
+                                                )
+
+                    </td>
+
+
+                    <!-- CATEGORY -->
+
+                    <td>
+                        @eventItem.Category
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        @if (eventItem.IsPublished)
+                                {
+                                    <span class="status published">
+                                        Published
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status draft">
+                                        Draft
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+
+                            <td class="actions">
+
+                                <!-- EDIT -->
+
+                                <a class="mini-btn"
+                                   asp-controller="Organizer"
+                                   asp-action="Edit"
+                                   asp-route-id="@eventItem.Id">
+
+                                    Edit
+
+                                </a>
+
+
+                                <!-- PUBLISH / UNPUBLISH -->
+                                @if (eventItem.IsPublished)
+                                {
+                                    <form method="post"
+                                          asp-controller="Organizer"
+                                          asp-action="Publish">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@eventItem.Id" />
+
+                                        <input type="hidden"
+                                               name="value"
+                                               value="false" />
+
+                                        <button class="mini-btn"
+                                                type="submit">
+
+                                            Unpublish
+
+                                        </button>
+
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form method="post"
+                                          asp-controller="Organizer"
+                                          asp-action="Publish">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@eventItem.Id" />
+
+                                        <input type="hidden"
+                                               name="value"
+                                               value="true" />
+
+                                        <button class="mini-btn"
+                                                type="submit">
+
+                                            Publish
+
+                                        </button>
+
+                                    </form>
+                                }
+
+
+                                <!-- DELETE -->
+
+                                <form method="post"
+                                      asp-controller="Organizer"
+                                      asp-action="Delete"
+                                      onsubmit="return confirm('Delete this event?');">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@eventItem.Id" />
+
+                                    <button class="mini-btn danger"
+                                            type="submit">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+
+                        <td colspan="5">
+                            No events created yet.
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     RESERVATION APPROVAL QUEUE
+     ========================================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <h2>
+                Reservation Approval Queue
+            </h2>
+
+            <p>
+                Total Reservations: @reservations.Count
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="responsive-table">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Event / Participant
+                    </th>
+
+                    <th>
+                        Ticket
+                    </th>
+
+                    <th>
+                        Total
+                    </th>
+
+                    <th>
+                        Payment
+                    </th>
+
+                    <th>
+                        Approval
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (reservations.Count > 0)
+                {
+                    @foreach (var reservation in reservations)
+                    {
+                        <tr>
+
+                            <!-- EVENT / PARTICIPANT -->
+
+                            <td>
+
+                                <strong>
+                                    @reservation.EventTitle
+                                </strong>
+
+                                <small>
+
+                                    @reservation.Customer
+
+                                    •
+
+                                    @reservation.Email
+
+                                </small>
+
+                            </td>
+
+
+                            <!-- TICKET -->
+
+                            <td>
+
+                                @reservation.TicketCategory
+
+                                ×
+
+                                @reservation.Quantity
+
+                            </td>
+
+
+                            <!-- TOTAL -->
+
+                            <td>
+
+                                LKR
+                                @reservation.TotalAmount.ToString("N2")
+
+                            </td>
+
+
+                            <!-- PAYMENT -->
+
+                            <td>
+
+                                @reservation.PaymentMethod
+
+                                /
+
+                                @reservation.PaymentStatus
+
+                            </td>
+
+
+                            <!-- APPROVAL -->
+
+                            <td>
+
+                                <span class="status @((reservation.ApprovalStatus ?? "").ToLower())">
+
+                                    @reservation.ApprovalStatus
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ACTION -->
+
+                            <td class="actions">
+
+                                @if (
+                                                        reservation.PaymentMethod == "Card" &&
+                                                        reservation.PaymentStatus == "Paid"
+                                                        )
+                                {
+                                    <span class="status approved">
+                                        Auto Approved
+                                    </span>
+                                }
+                                else if (
+                                reservation.ApprovalStatus == "Pending"
+                                )
+                                {
+                                    <!-- APPROVE -->
+
+                                    <form method="post"
+                                          asp-controller="Organizer"
+                                          asp-action="Approval">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@reservation.Id" />
+
+                                        <input type="hidden"
+                                               name="status"
+                                               value="Approved" />
+
+                                        <button class="mini-btn approve"
+                                                type="submit">
+
+                                            Approve
+
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- REJECT -->
+
+                                    <form method="post"
+                                          asp-controller="Organizer"
+                                          asp-action="Approval">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@reservation.Id" />
+
+                                        <input type="hidden"
+                                               name="status"
+                                               value="Rejected" />
+
+                                        <button class="mini-btn danger"
+                                                type="submit">
+
+                                            Reject
+
+                                        </button>
+
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span>
+                                        -
+                                    </span>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+
+                        <td colspan="6">
+                            No reservations yet.
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>

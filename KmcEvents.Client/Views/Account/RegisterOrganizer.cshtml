@@ -1,0 +1,178 @@
+@model OrganizerRegisterVm
+
+@{
+    ViewData["Title"] = "Organizer Registration";
+}
+
+<section class="auth-page">
+
+    <div class="auth-card wide">
+
+        <div class="auth-title">
+
+            <span class="eyebrow">
+                Event Organizer
+            </span>
+
+            <h1>
+                Register your organization
+            </h1>
+
+            <p>
+                Create and manage city events through the KMC API-powered platform.
+            </p>
+
+        </div>
+
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="validation">
+            </div>
+
+
+            <!-- ORGANIZING COMPANY NAME -->
+
+            <label asp-for="CompanyName">
+                Organizing Company Name
+            </label>
+
+            <input asp-for="CompanyName"
+                   placeholder="Enter organizing company name" />
+
+            <span asp-validation-for="CompanyName"
+                  class="validation">
+            </span>
+
+
+            <!-- OWNER / ORGANIZER NAME -->
+
+            <label asp-for="FullName">
+                Owner / Organizer Name
+            </label>
+
+            <input asp-for="FullName"
+                   placeholder="Enter owner or organizer name" />
+
+            <span asp-validation-for="FullName"
+                  class="validation">
+            </span>
+
+
+            <!-- NIC -->
+
+            <label asp-for="Nic">
+                NIC
+            </label>
+
+            <input asp-for="Nic"
+                   maxlength="12"
+                   minlength="10"
+                   pattern="[A-Za-z0-9]{10,12}"
+                   placeholder="Enter NIC" />
+
+            <span asp-validation-for="Nic"
+                  class="validation">
+            </span>
+
+
+            <!-- EMAIL -->
+
+            <label asp-for="Email">
+                Email
+            </label>
+
+            <input asp-for="Email"
+                   type="email"
+                   placeholder="Enter email address" />
+
+            <span asp-validation-for="Email"
+                  class="validation">
+            </span>
+
+
+            <!-- PASSWORD -->
+
+            <label asp-for="Password">
+                Password
+            </label>
+
+            <div class="password-wrap">
+
+                <input asp-for="Password"
+                       type="password"
+                       id="orgPwd"
+                       placeholder="Enter password" />
+
+                <button type="button"
+                        class="toggle-password"
+                        onclick="togglePassword('orgPwd', this)"
+                        aria-label="Show password">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </button>
+
+            </div>
+
+            <span asp-validation-for="Password"
+                  class="validation">
+            </span>
+
+
+            <!-- REGISTER BUTTON -->
+
+            <button class="btn primary full"
+                    type="submit">
+
+                Register Organizer
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<script>
+    function togglePassword(inputId, button) {
+
+        const input = document.getElementById(inputId);
+
+        const icon = button.querySelector("i");
+
+        if (!input) {
+            return;
+        }
+
+        if (input.type === "password") {
+
+            input.type = "text";
+
+            icon.classList.remove("fa-eye");
+
+            icon.classList.add("fa-eye-slash");
+
+            button.setAttribute(
+                "aria-label",
+                "Hide password"
+            );
+
+        } else {
+
+            input.type = "password";
+
+            icon.classList.remove("fa-eye-slash");
+
+            icon.classList.add("fa-eye");
+
+            button.setAttribute(
+                "aria-label",
+                "Show password"
+            );
+        }
+    }
+</script>

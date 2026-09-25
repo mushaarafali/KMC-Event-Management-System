@@ -1,0 +1,203 @@
+@model PublicRegisterVm
+
+@{
+    ViewData["Title"] = "Public Registration";
+}
+
+<section class="auth-page">
+
+    <div class="auth-card wide">
+
+        <!-- =========================================
+             PAGE TITLE
+             ========================================= -->
+
+        <div class="auth-title">
+
+            <span class="eyebrow">
+                Public Account
+            </span>
+
+            <h1>
+                Create your account
+            </h1>
+
+            <p>
+                Registration is required before seat reservation.
+            </p>
+
+        </div>
+
+
+        <!-- =========================================
+             PUBLIC REGISTRATION FORM
+             ========================================= -->
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="validation">
+            </div>
+
+
+            <!-- =====================================
+                 FULL NAME
+                 ===================================== -->
+
+            <label asp-for="FullName">
+                Full Name
+            </label>
+
+            <input asp-for="FullName"
+                   placeholder="Enter your full name" />
+
+            <span asp-validation-for="FullName"
+                  class="validation">
+            </span>
+
+
+            <!-- =====================================
+                 NIC
+                 ===================================== -->
+
+            <label asp-for="Nic">
+                NIC
+            </label>
+
+            <input asp-for="Nic"
+                   maxlength="12"
+                   minlength="10"
+                   pattern="[A-Za-z0-9]{10,12}"
+                   placeholder="Enter NIC" />
+
+            <span asp-validation-for="Nic"
+                  class="validation">
+            </span>
+
+
+            <!-- =====================================
+                 EMAIL
+                 ===================================== -->
+
+            <label asp-for="Email">
+                Email
+            </label>
+
+            <input asp-for="Email"
+                   type="email"
+                   placeholder="Enter email address" />
+
+            <span asp-validation-for="Email"
+                  class="validation">
+            </span>
+
+
+            <!-- =====================================
+                 PASSWORD
+                 ===================================== -->
+
+            <label asp-for="Password">
+                Password
+            </label>
+
+            <div class="password-wrap">
+
+                <input asp-for="Password"
+                       type="password"
+                       id="publicPwd"
+                       placeholder="Enter password" />
+
+                <button type="button"
+                        class="toggle-password"
+                        onclick="togglePassword('publicPwd', this)"
+                        aria-label="Show password">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </button>
+
+            </div>
+
+            <span asp-validation-for="Password"
+                  class="validation">
+            </span>
+
+
+            <!-- =====================================
+                 SUBMIT BUTTON
+                 ===================================== -->
+
+            <button class="btn primary full"
+                    type="submit">
+
+                Create Public Account
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- =============================================
+     PASSWORD SHOW / HIDE
+     ============================================= -->
+
+<script>
+
+    function togglePassword(inputId, button) {
+
+        const input =
+            document.getElementById(inputId);
+
+        const icon =
+            button.querySelector("i");
+
+
+        if (!input || !icon) {
+            return;
+        }
+
+
+        // Show password
+        if (input.type === "password") {
+
+            input.type = "text";
+
+            icon.classList.remove(
+                "fa-eye"
+            );
+
+            icon.classList.add(
+                "fa-eye-slash"
+            );
+
+            button.setAttribute(
+                "aria-label",
+                "Hide password"
+            );
+        }
+
+        // Hide password
+        else {
+
+            input.type = "password";
+
+            icon.classList.remove(
+                "fa-eye-slash"
+            );
+
+            icon.classList.add(
+                "fa-eye"
+            );
+
+            button.setAttribute(
+                "aria-label",
+                "Show password"
+            );
+        }
+    }
+
+</script>

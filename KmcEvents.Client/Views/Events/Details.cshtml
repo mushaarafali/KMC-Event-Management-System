@@ -1,0 +1,237 @@
+
+
+@model EventVm
+
+@{
+    ViewData["Title"] = Model.Title;
+
+    var heroImage = string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? Url.Content("~/images/kmc-hero.jpg")
+        : Model.ImageUrl;
+
+    var role =
+        Context.Session.GetString("Role");
+}
+
+<section class="detail-hero"
+         style="background-image:
+                linear-gradient(
+                    90deg,
+                    rgba(28, 10, 13, 0.92) 0%,
+                    rgba(28, 10, 13, 0.68) 45%,
+                    rgba(28, 10, 13, 0.25) 100%
+                ),
+                url('@heroImage');">
+
+    <div class="detail-hero-content">
+
+        <span class="eyebrow">
+            @Model.Category
+        </span>
+
+        <h1>
+            @Model.Title
+        </h1>
+
+        <p>
+            @Model.Location
+            •
+            @Model.EventDate.ToString("dddd, dd MMMM yyyy")
+            •
+            @Model.EventDate.ToString("hh:mm tt")
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="detail-layout">
+
+    <article class="detail-card">
+
+        <h2>
+            About this Event
+        </h2>
+
+        <p>
+            @Model.Description
+        </p>
+
+
+        <div class="facts">
+
+            <div>
+
+                <strong>
+                    @Model.AvailableSeats
+                </strong>
+
+                <span>
+                    Total Available Seats
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    @Model.RegistrationCloseDate.ToString(
+                                        "dd MMM"
+                                        )
+                </strong>
+
+                <span>
+                    Registration Closes
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    @Model.CompanyName
+                </strong>
+
+                <span>
+                    Organizer
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <h2>
+            Ticket Categories
+        </h2>
+
+
+        <div class="ticket-list">
+
+            @foreach (var ticket in Model.TicketCategories)
+            {
+                <div class="ticket-item">
+
+                    <div class="ticket-info">
+
+                        <span class="ticket-name">
+                            @ticket.Name
+                        </span>
+
+                    </div>
+
+
+                    <div class="ticket-price">
+
+                        <strong>
+                            LKR @ticket.Price.ToString("N2")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="ticket-seat-info">
+
+                        @if (ticket.AvailableSeats > 0)
+                        {
+                            <small class="ticket-available">
+
+                                @ticket.AvailableSeats
+                                seats available
+
+                            </small>
+                        }
+                        else
+                        {
+                            <small class="sold-out">
+
+                                Sold Out
+
+                            </small>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </article>
+
+
+    <aside class="reserve-card">
+
+        <h3>
+            Reserve Your Seat
+        </h3>
+
+
+        @if (role == "Public")
+        {
+            @if (Model.AvailableSeats > 0)
+            {
+                <p>
+                    Choose your ticket category,
+                    number of seats and payment method
+                    on the next step.
+                </p>
+
+                <a class="btn primary full"
+                   asp-controller="Reservations"
+                   asp-action="Create"
+                   asp-route-eventId="@Model.Id">
+
+                    Reserve Now
+
+                </a>
+            }
+            else
+            {
+                <p>
+                    All seats for this event have been reserved.
+                </p>
+
+                <span class="sold-out">
+                    Event Sold Out
+                </span>
+            }
+        }
+        else if (role == null)
+        {
+            <p>
+                Guest users can view event information.
+                Login is required before reserving a seat.
+            </p>
+
+            <a class="btn primary full"
+               asp-controller="Account"
+               asp-action="Login"
+               asp-route-returnUrl="/Reservations/Create?eventId=@Model.Id">
+
+                Login to Reserve
+
+            </a>
+
+            <a class="btn ghost full"
+               asp-controller="Account"
+               asp-action="RegisterPublic">
+
+                Create Public Account
+
+            </a>
+        }
+        else
+        {
+            <p>
+                Seat reservation is available only
+                for public user accounts.
+            </p>
+        }
+
+    </aside>
+
+</section>

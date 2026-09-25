@@ -1,0 +1,57 @@
+@model List<EventVm>
+@{
+    ViewData["Title"]="Events";
+}
+<section class="page-hero events-page-hero">
+
+    <div class="page-hero-content">
+
+        <span class="eyebrow">
+            Explore Kandy
+        </span>
+
+        <h1>
+            Discover Upcoming Events
+        </h1>
+
+        <p>
+            Find cultural, entertainment, food and community
+            events happening across Kandy.
+        </p>
+
+    </div>
+
+</section>
+<section class="events-section">
+    <form class="search-panel" method="get">
+        <input name="q" value="@ViewBag.Q" placeholder="Keyword or event name"/>
+        <select name="category">
+            <option value="">All categories</option>@foreach(var c in new[]{"Culture","Music","Food","Sports","Education","Community","Business","Religious","Entertainment"})
+            {
+                <option value="@c">@c</option>
+            }
+        </select>
+        <input name="location" value="@ViewBag.Location" placeholder="Location"/>
+        <input type="date" name="date" value="@ViewBag.Date" min="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+        <button class="btn primary" type="submit">Search</button>
+    </form>
+    <div class="event-grid">@foreach(var e in Model)
+        {
+            <article class="event-card">
+                <div class="event-image" style="background-image:url('@(string.IsNullOrWhiteSpace(e.ImageUrl)?Url.Content("~/images/kmc-hero.jpg"):e.ImageUrl)')">
+                    <span>@e.Category</span>
+                </div>
+                <div class="event-body">
+                    <div class="date-chip">@e.EventDate.ToString("dd MMM yyyy • hh:mm tt")</div>
+                    <h3>@e.Title</h3>
+                    <p>@e.Location</p>
+                    <a class="btn small" asp-action="Details" asp-route-id="@e.Id">View Details</a>
+                </div>
+            </article>
+        }
+        @if(Model.Count==0)
+        {
+            <div class="empty-state">No events match your search.</div>
+        }
+    </div>
+</section>

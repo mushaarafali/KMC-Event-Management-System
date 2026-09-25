@@ -1,0 +1,447 @@
+@model AdminDashboardVm
+
+@{
+    ViewData["Title"] = "KMC Admin Dashboard";
+
+    var users = ViewBag.Users as List<UserRowVm> ?? new List<UserRowVm>();
+    var events = ViewBag.Events as List<AdminEventRowVm> ?? new List<AdminEventRowVm>();
+    var reservations = ViewBag.Reservations as List<ReservationVm> ?? new List<ReservationVm>();
+}
+
+<section class="dashboard-head">
+    <div>
+        <span class="eyebrow">Kandy Municipal Council</span>
+        <h1>System Administrator Dashboard</h1>
+        <p>Central monitoring for users, events, reservations and payments.</p>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     DASHBOARD STATISTICS
+     ========================================================= -->
+
+<section class="stat-grid">
+
+    <div class="stat-card">
+        <strong>@Model.Users</strong>
+        <span>Total Users</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.Organizers</strong>
+        <span>Event Organizers</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.PublicUsers</strong>
+        <span>Public Users</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.Events</strong>
+        <span>Total Events</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.PublishedEvents</strong>
+        <span>Published Events</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.Reservations</strong>
+        <span>Total Reservations</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.PendingApprovals</strong>
+        <span>Pending Approvals</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.ApprovedReservations</strong>
+        <span>Approved Reservations</span>
+    </div>
+
+    <div class="stat-card">
+        <strong>@Model.PendingPayments</strong>
+        <span>Pending Payments</span>
+    </div>
+
+    <div class="stat-card revenue-card">
+        <strong>LKR @Model.PaidRevenue.ToString("N2")</strong>
+        <span>Paid Revenue</span>
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     USER MANAGEMENT
+     ========================================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Account Management</span>
+            <h2>User Management</h2>
+            <p>View and manage registered administrators, organizers and public users.</p>
+        </div>
+    </div>
+
+    <div class="responsive-table">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>NIC</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Registered</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (users.Count > 0)
+                {
+                    @foreach (var user in users)
+                    {
+                        <tr>
+
+                            <td>
+                                <strong>@user.FullName</strong>
+
+                                @if (!string.IsNullOrWhiteSpace(user.CompanyName))
+                                {
+                                    <small>@user.CompanyName</small>
+                                }
+                            </td>
+
+                            <td>@user.Nic</td>
+
+                            <td>@user.Email</td>
+
+                            <td>
+                                <span class="status">@user.Role</span>
+                            </td>
+
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="status approved">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="status rejected">Disabled</span>
+                                }
+                            </td>
+
+                            <td>
+                                @user.CreatedAt.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+
+                                @if (user.Role != "KMC Admin")
+                                {
+                                    @if (user.IsActive)
+                                    {
+                                        <form method="post"
+                                              asp-controller="Admin"
+                                              asp-action="DisableUser">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@user.Id" />
+
+                                            <button class="mini-btn danger"
+                                                    type="submit">
+                                                Disable
+                                            </button>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post"
+                                              asp-controller="Admin"
+                                              asp-action="EnableUser">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@user.Id" />
+
+                                            <button class="mini-btn approve"
+                                                    type="submit">
+                                                Enable
+                                            </button>
+
+                                        </form>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>Protected</span>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No users found.</td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ALL EVENTS
+     ========================================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Event Monitoring</span>
+            <h2>All Events</h2>
+            <p>Monitor all events created by registered event organizers.</p>
+        </div>
+    </div>
+
+    <div class="responsive-table">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Organizer</th>
+                    <th>Company</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (events.Count > 0)
+                {
+                    @foreach (var eventItem in events)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <a asp-controller="Events"
+                                   asp-action="Details"
+                                   asp-route-id="@eventItem.Id"
+                                   class="admin-event-link">
+
+                                    @eventItem.Title
+
+                                </a>
+
+                                <small>
+                                    @eventItem.Location
+                                </small>
+
+                            </td>
+
+                            <td>
+                                @eventItem.Organizer
+                            </td>
+
+                            <td>
+                                @(string.IsNullOrWhiteSpace(eventItem.Company)
+                                                        ? "-"
+                                                        : eventItem.Company)
+                    </td>
+
+                            <td>
+                                @eventItem.EventDate.ToString("dd MMM yyyy hh:mm tt")
+                            </td>
+
+                            <td>
+                                @eventItem.Category
+                            </td>
+
+                            <td>
+
+                        @if (eventItem.IsPublished)
+                                {
+                                    <span class="status approved">
+                                        Published
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status pending">
+                                        Draft
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td>
+
+                                <a asp-controller="Events"
+                                   asp-action="Details"
+                                   asp-route-id="@eventItem.Id"
+                                   class="mini-btn view-event-btn">
+
+                                    <i class="fa-solid fa-eye"></i>
+                                    View Event
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No events found.</td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ALL RESERVATIONS
+     ========================================================= -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Booking Monitoring</span>
+            <h2>All Reservations</h2>
+
+            <p>
+                Monitor participant reservations,
+                payment status and organizer approval status.
+            </p>
+        </div>
+    </div>
+
+    <div class="responsive-table">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Event / Customer</th>
+                    <th>Email</th>
+                    <th>Seats</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Approval</th>
+                    <th>Reserved At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (reservations.Count > 0)
+                {
+                    @foreach (var reservation in reservations)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    @reservation.EventTitle
+                                </strong>
+
+                                <small>
+                                    @reservation.Customer
+                                </small>
+
+                            </td>
+
+                            <td>
+                                @reservation.Email
+                            </td>
+
+                            <td>
+                                @reservation.Quantity
+                            </td>
+
+                            <td>
+                                LKR @reservation.TotalAmount.ToString("N2")
+                            </td>
+
+                            <td>
+
+                                <strong>
+                                    @reservation.PaymentMethod
+                                </strong>
+
+                                <small>
+                                    @reservation.PaymentStatus
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                <span class="status @((reservation.ApprovalStatus ?? "").ToLower())">
+                                    @reservation.ApprovalStatus
+                                </span>
+
+                            </td>
+
+                            <td>
+                                @reservation.ReservedAt.ToString("dd MMM yyyy hh:mm tt")
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No reservations found.</td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>

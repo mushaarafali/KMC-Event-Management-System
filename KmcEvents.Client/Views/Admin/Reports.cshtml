@@ -1,0 +1,588 @@
+﻿@using KmcEvents.Client.Models
+
+@{
+    ViewData["Title"] = "Reports";
+
+    var monthlyRevenue =
+        ViewBag.MonthlyRevenue as List<MonthlyRevenueVm>
+        ?? new List<MonthlyRevenueVm>();
+
+    var publicUsers =
+        ViewBag.PublicUsers as List<PublicUserReportVm>
+        ?? new List<PublicUserReportVm>();
+
+    var organizers =
+        ViewBag.Organizers as List<OrganizerIncomeVm>
+        ?? new List<OrganizerIncomeVm>();
+
+    var totalRevenue = monthlyRevenue.Sum(x => x.Revenue);
+    var totalPaidReservations = monthlyRevenue.Sum(x => x.Reservations);
+    var totalPublicSpent = publicUsers.Sum(x => x.TotalSpent);
+    var totalOrganizerIncome = organizers.Sum(x => x.PaidIncome);
+}
+
+<section class="admin-page">
+
+    <div class="admin-page-inner">
+
+        <!-- =====================================================
+             PAGE HEADER
+             ===================================================== -->
+
+        <div class="admin-title">
+
+            <span class="eyebrow">
+                Reporting Centre
+            </span>
+
+            <h1>
+                Administrative Reports
+            </h1>
+
+            <p>
+                Review revenue, public user participation,
+                organizer performance and platform activity.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================================
+             REPORT SUMMARY
+             ===================================================== -->
+
+        <div class="stat-grid">
+
+            <div class="stat-card">
+                <strong>
+                    LKR @totalRevenue.ToString("N2")
+                </strong>
+
+                <span>
+                    Total Paid Revenue
+                </span>
+            </div>
+
+
+            <div class="stat-card">
+                <strong>
+                    @totalPaidReservations
+                </strong>
+
+                <span>
+                    Paid Reservations
+                </span>
+            </div>
+
+
+            <div class="stat-card">
+                <strong>
+                    @publicUsers.Count
+                </strong>
+
+                <span>
+                    Public Users
+                </span>
+            </div>
+
+
+            <div class="stat-card">
+                <strong>
+                    @organizers.Count
+                </strong>
+
+                <span>
+                    Event Organizers
+                </span>
+            </div>
+
+
+            <div class="stat-card">
+                <strong>
+                    LKR @totalPublicSpent.ToString("N2")
+                </strong>
+
+                <span>
+                    Public User Spending
+                </span>
+            </div>
+
+
+            <div class="stat-card">
+                <strong>
+                    LKR @totalOrganizerIncome.ToString("N2")
+                </strong>
+
+                <span>
+                    Organizer Paid Income
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             MONTHLY REVENUE REPORT
+             ===================================================== -->
+
+        <div class="admin-section">
+
+            <div class="section-heading row">
+
+                <div>
+                    <span class="eyebrow">
+                        Financial Performance
+                    </span>
+
+                    <h2>
+                        Monthly Revenue
+                    </h2>
+
+                    <p>
+                        Monthly paid reservation revenue
+                        generated through the KMC Event Management Platform.
+                    </p>
+                </div>
+
+            </div>
+
+
+            @if (monthlyRevenue.Count == 0)
+            {
+                <div class="admin-empty-state">
+
+                    <h3>
+                        No Revenue Data
+                    </h3>
+
+                    <p>
+                        There are currently no paid reservations
+                        available for this report.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="admin-table-wrap">
+
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Paid Reservations</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in monthlyRevenue)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <strong>
+                                            @(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Month))
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        @item.Year
+                                    </td>
+
+                                    <td>
+                                        @item.Reservations
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            LKR @item.Revenue.ToString("N2")
+                                        </strong>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             PUBLIC USER REPORT
+             ===================================================== -->
+
+        <div class="admin-section">
+
+            <div class="section-heading row">
+
+                <div>
+                    <span class="eyebrow">
+                        Participant Analysis
+                    </span>
+
+                    <h2>
+                        Public User Report
+                    </h2>
+
+                    <p>
+                        Review event participation, reservations,
+                        approved bookings, reserved seats and
+                        spending for each registered public user.
+                    </p>
+                </div>
+
+            </div>
+
+
+            @if (publicUsers.Count == 0)
+            {
+                <div class="admin-empty-state">
+
+                    <h3>
+                        No Public Users
+                    </h3>
+
+                    <p>
+                        No public user information
+                        is currently available.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="admin-table-wrap">
+
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>NIC</th>
+                                <th>Status</th>
+                                <th>Events</th>
+                                <th>Reservations</th>
+                                <th>Approved</th>
+                                <th>Seats</th>
+                                <th>Total Spent</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var user in publicUsers)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+                                            @user.FullName
+                                        </strong>
+
+                                        <small class="table-sub">
+                                            @user.Email
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+                                        @user.Nic
+                                    </td>
+
+                                    <td>
+
+                                        @if (user.IsActive)
+                                        {
+                                            <span class="status active">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status disabled">
+                                                Disabled
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+                                        @user.TotalEvents
+                                    </td>
+
+                                    <td>
+                                        @user.TotalReservations
+                                    </td>
+
+                                    <td>
+                                        @user.ApprovedReservations
+                                    </td>
+
+                                    <td>
+                                        @user.TotalSeats
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            LKR @user.TotalSpent.ToString("N2")
+                                        </strong>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             ORGANIZER INCOME REPORT
+             ===================================================== -->
+
+        <div class="admin-section">
+
+            <div class="section-heading row">
+
+                <div>
+                    <span class="eyebrow">
+                        Organizer Performance
+                    </span>
+
+                    <h2>
+                        Organizer Income Report
+                    </h2>
+
+                    <p>
+                        Review organizer events, published events,
+                        reservations, approved bookings, ticket sales
+                        and financial performance.
+                    </p>
+                </div>
+
+            </div>
+
+
+            @if (organizers.Count == 0)
+            {
+                <div class="admin-empty-state">
+
+                    <h3>
+                        No Organizer Data
+                    </h3>
+
+                    <p>
+                        No event organizer information
+                        is currently available.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="admin-table-wrap">
+
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th>Organizer</th>
+                                <th>Status</th>
+                                <th>Events</th>
+                                <th>Published</th>
+                                <th>Reservations</th>
+                                <th>Approved</th>
+                                <th>Seats Sold</th>
+                                <th>Paid Income</th>
+                                <th>Pending Income</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var organizer in organizers)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+                                            @organizer.FullName
+                                        </strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(organizer.CompanyName))
+                                        {
+                                            <small class="table-sub">
+                                                @organizer.CompanyName
+                                            </small>
+                                        }
+
+                                        <small class="table-sub">
+                                            @organizer.Email
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (organizer.IsActive)
+                                        {
+                                            <span class="status active">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status disabled">
+                                                Disabled
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+                                        @organizer.TotalEvents
+                                    </td>
+
+                                    <td>
+                                        @organizer.PublishedEvents
+                                    </td>
+
+                                    <td>
+                                        @organizer.TotalReservations
+                                    </td>
+
+                                    <td>
+                                        @organizer.ApprovedReservations
+                                    </td>
+
+                                    <td>
+                                        @organizer.TotalSeatsSold
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            LKR @organizer.PaidIncome.ToString("N2")
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        LKR @organizer.PendingIncome.ToString("N2")
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- =====================================================
+             PDF REPORT
+             ===================================================== -->
+
+        <div class="admin-section">
+
+            <div class="section-heading row">
+
+                <div>
+                    <span class="eyebrow">
+                        Report Export
+                    </span>
+
+                    <h2>
+                        PDF Reports
+                    </h2>
+
+                    <p>
+                        Generate a downloadable administrative PDF report
+                        for the KMC Event Management Platform.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="report-grid">
+
+                <div class="report-card pdf-report-card">
+
+                    <div class="report-icon pdf-icon">
+
+                        <i class="fa-solid fa-file-pdf"></i>
+
+                    </div>
+
+
+                    <h3>
+                        Complete Administrative Report
+                    </h3>
+
+
+                    <p>
+                        Generate a complete administrative report containing
+                        revenue, public user participation and organizer
+                        income information.
+                    </p>
+
+
+                    <div class="pdf-report-features">
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Monthly Revenue
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Public User Participation
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-circle-check"></i>
+                            Organizer Income
+                        </span>
+
+                    </div>
+
+
+                    <a asp-controller="Admin"
+                       asp-action="DownloadReportPdf"
+                       class="btn primary pdf-download-btn">
+
+                        <i class="fa-solid fa-file-arrow-down"></i>
+
+                        Generate PDF
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
